@@ -724,15 +724,7 @@ $("marketBtn").onclick=async()=>{
       }
     }
 
-  setStatus(`분석 성공 ${all.length}종목 / 실패 ${errors.length}종목${errors.length ? " · 실패: "+errors.slice(0,5).join(" | ") : ""}`);  // v3.5 실전 시장포착 점수:
-    if(errors.length){
-  $("out").innerHTML =
-    `<div class="marketbox">
-      <b>⚠️ API 분석 실패 ${errors.length}종목</b><br><br>
-      ${errors.slice(0,10).join("<br>")}
-    </div>`;
-  return;
-}
+  
     // "아무 종목 중 1등"을 없애고 실제 자금 유입 + 준비도 + 과열 위험을 함께 본다.
     all.forEach(x=>{
       const rvol=Math.max(0,Number(x.effectiveRvol)||0);

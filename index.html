@@ -590,7 +590,7 @@ async function discoverMarketCandidates(min,max){
   let cursor=0;
   try{cursor=Number(localStorage.getItem("us_universe_cursor_v34")||0)}catch(e){}
   const picks=[];
-  const step=1; // 같은 섹터/알파벳에 몰리지 않도록 건너뛰며 선택
+  const step=97; // 같은 섹터/알파벳에 몰리지 않도록 건너뛰며 선택
   for(let i=0;i<16 && all.length;i++){
     picks.push(all[(cursor+i*step)%all.length]);
   }
@@ -708,14 +708,13 @@ $("marketBtn").onclick=async()=>{
     }).slice(0,24);
     if(!candidates.length) throw Error("시장 후보를 불러오지 못했어.");
 
-    let all=[];,errors=[];
+    let all=[];
     const groups=[];
     for(let i=0;i<candidates.length;i+=8) groups.push(candidates.slice(i,i+8));
 
     for(let g=0;g<groups.length;g++){
       const r=await runBatch(groups[g],min,max,`시장 자동발굴 ${g*8+1}~${Math.min((g+1)*8,candidates.length)}`);
       all.push(...r.res);
-      errors.push(...r.errors);
       if(g<groups.length-1){
         for(let sec=60;sec>0;sec--){
           setStatus(`API 제한 안전 대기 중… 다음 시장후보까지 ${sec}초`);
@@ -724,7 +723,7 @@ $("marketBtn").onclick=async()=>{
       }
     }
 
-  
+    // v3.5 실전 시장포착 점수:
     // "아무 종목 중 1등"을 없애고 실제 자금 유입 + 준비도 + 과열 위험을 함께 본다.
     all.forEach(x=>{
       const rvol=Math.max(0,Number(x.effectiveRvol)||0);
@@ -735,10 +734,10 @@ $("marketBtn").onclick=async()=>{
         flowBonus + triggerBonus - x.dangerScore*0.15
       )));
       x.livePass = !x.hardFail
-        && rvol >= 1.05
-        && x.marketDiscoveryScore>=55
+        && rvol >= 1.20
+        && x.marketDiscoveryScore >= 65
         && x.score >= 58
-        && x.explosionScore >= 55
+        && x.explosionScore >= 62
         && x.R < 76
         && x.dayChg < 30;
     });

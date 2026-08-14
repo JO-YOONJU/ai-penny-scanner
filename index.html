@@ -590,7 +590,7 @@ async function discoverMarketCandidates(min,max){
   let cursor=0;
   try{cursor=Number(localStorage.getItem("us_universe_cursor_v34")||0)}catch(e){}
   const picks=[];
-  const step=97; // 같은 섹터/알파벳에 몰리지 않도록 건너뛰며 선택
+  const step=1; // 같은 섹터/알파벳에 몰리지 않도록 건너뛰며 선택
   for(let i=0;i<16 && all.length;i++){
     picks.push(all[(cursor+i*step)%all.length]);
   }

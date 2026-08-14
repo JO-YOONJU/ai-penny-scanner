@@ -708,13 +708,14 @@ $("marketBtn").onclick=async()=>{
     }).slice(0,24);
     if(!candidates.length) throw Error("시장 후보를 불러오지 못했어.");
 
-    let all=[];
+    let all=[];,errors=[];
     const groups=[];
     for(let i=0;i<candidates.length;i+=8) groups.push(candidates.slice(i,i+8));
 
     for(let g=0;g<groups.length;g++){
       const r=await runBatch(groups[g],min,max,`시장 자동발굴 ${g*8+1}~${Math.min((g+1)*8,candidates.length)}`);
       all.push(...r.res);
+      errors.push(...r.errors);
       if(g<groups.length-1){
         for(let sec=60;sec>0;sec--){
           setStatus(`API 제한 안전 대기 중… 다음 시장후보까지 ${sec}초`);
@@ -723,7 +724,7 @@ $("marketBtn").onclick=async()=>{
       }
     }
 
-    // v3.5 실전 시장포착 점수:
+  setStatus(`분석 성공 ${all.length}종목 / 실패 ${errors.length}종목${errors.length ? " · 실패: "+errors.slice(0,5).join(" | ") : ""}`);  // v3.5 실전 시장포착 점수:
     // "아무 종목 중 1등"을 없애고 실제 자금 유입 + 준비도 + 과열 위험을 함께 본다.
     all.forEach(x=>{
       const rvol=Math.max(0,Number(x.effectiveRvol)||0);
